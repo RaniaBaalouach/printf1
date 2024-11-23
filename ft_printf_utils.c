@@ -6,13 +6,13 @@
 /*   By: rbaaloua <rbaaloua@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 11:59:26 by rbaaloua          #+#    #+#             */
-/*   Updated: 2024/11/23 11:19:22 by rbaaloua         ###   ########.fr       */
+/*   Updated: 2024/11/23 15:05:47 by rbaaloua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-void	ft_put_str(char *str, int *g_count)
+int	ft_putstr(char *str)
 {
 	int	i;
 
@@ -21,45 +21,67 @@ void	ft_put_str(char *str, int *g_count)
 		str = "(null)";
 	while (str[i])
 	{
-		ft_put_char(str[i], g_count);
+		ft_putchar(str[i]);
 		i++;
 	}
+	return (i);
 }
 
-void	ft_put_nbr(int n, int *g_count)
+int	ft_putdigit(long n, int base, char f_spe)
 {
-	long	num;
+	int		len;
+	char	*base_chars;
 
-	num = n;
-	if (num < 0)
-	{
-		ft_put_char('-', g_count);
-		num *= -1;
-	}
-	if (num > 9)
-		ft_put_nbr(num / 10, g_count);
-	ft_put_char(num % 10 + '0', g_count);
-}
-
-void	ft_put_ptr(unsigned long n, int *g_count)
-{
-	ft_put_str("0x", g_count);
-	ft_put_hex(n, 'x', g_count);
-}
-
-void	ft_put_unbr(unsigned int n, int *g_count)
-{
-	if (n > 9)
-		ft_put_unbr(n / 10, g_count);
-	ft_put_char(n % 10 + '0', g_count);
-}
-
-void	ft_put_hex(unsigned int n, char format_specifier, int *g_count)
-{
-	if (n > 15)
-		ft_put_hex(n / 16, format_specifier, g_count);
-	if (format_specifier == 'x')
-		ft_put_char("0123456789abcdef"[n % 16], g_count);
+	if (f_spe == 'X')
+		base_chars = "0123456789ABCDEF";
+	else if (f_spe == 'x')
+		base_chars = "0123456789abcdef";
 	else
-		ft_put_char("0123456789ABCDEF"[n % 16], g_count);
+		base_chars = "0123456789";
+	len = 0;
+	if (f_spe == 'd' || f_spe == 'i')
+	{
+		if (n < 0)
+		{
+			len += ft_putchar('-');
+			n *= -1;
+		}
+	}
+	if (n >= base)
+		len += ft_putdigit(n / base, base, f_spe);
+	len += ft_putchar(base_chars[n % base]);
+	return (len);
+}
+
+int	ft_putunsigned(unsigned int n)
+{
+	int	len;
+
+	len = 0;
+	if (n > 9)
+		len += ft_putunsigned(n / 10);
+	return (len + ft_putchar((n % 10) + '0'));
+}
+
+int	ft_putptr_rec(unsigned long n)
+{
+	int		len;
+	char	*base_chars;
+
+	base_chars = "0123456789abcdef";
+	len = 0;
+	if (n >= 16)
+		len += ft_putptr_rec(n / 16);
+	len += ft_putchar(base_chars[n % 16]);
+	return (len);
+}
+
+int	ft_putptr(void *ptr)
+{
+	int	len;
+
+	len = 0;
+	len += ft_putstr("0x");
+	len += ft_putptr_rec((unsigned long)ptr);
+	return (len);
 }
