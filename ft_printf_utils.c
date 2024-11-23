@@ -1,81 +1,65 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf_utiles.c                                 :+:      :+:    :+:   */
+/*   ft_printf_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rbaaloua <rbaaloua@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 11:59:26 by rbaaloua          #+#    #+#             */
-/*   Updated: 2024/11/23 07:48:16 by rbaaloua         ###   ########.fr       */
+/*   Updated: 2024/11/23 11:19:22 by rbaaloua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	ft_put_str(char *str)
+void	ft_put_str(char *str, int *g_count)
 {
 	int	i;
 
 	i = 0;
 	if (!str)
-		return (ft_put_str("(null)"));
+		str = "(null)";
 	while (str[i])
 	{
-		ft_put_char(str[i]);
+		ft_put_char(str[i], g_count);
 		i++;
 	}
-	return (i);
 }
 
-int	ft_put_nbr(int n)
+void	ft_put_nbr(int n, int *g_count)
 {
 	long	num;
-	int		len;
 
 	num = n;
-	len = 0;
 	if (num < 0)
 	{
-		len += ft_put_char('-');
+		ft_put_char('-', g_count);
 		num *= -1;
 	}
 	if (num > 9)
-		len += ft_put_nbr(num / 10);
-	len += ft_put_char(num % 10 + '0');
-	return (len);
+		ft_put_nbr(num / 10, g_count);
+	ft_put_char(num % 10 + '0', g_count);
 }
 
-int	ft_put_ptr(unsigned long n)
+void	ft_put_ptr(unsigned long n, int *g_count)
 {
-	int	len;
-
-	len = 0;
-	len += ft_put_str("0x");
-	len += ft_put_hex(n, 'x');
-	return (len);
+	ft_put_str("0x", g_count);
+	ft_put_hex(n, 'x', g_count);
 }
 
-int	ft_put_unbr(unsigned int n)
+void	ft_put_unbr(unsigned int n, int *g_count)
 {
-	int	len;
-
-	len = 0;
 	if (n > 9)
-		len += ft_put_unbr(n / 10);
-	len += ft_put_char(n % 10 + '0');
-	return (len);
+		ft_put_unbr(n / 10, g_count);
+	ft_put_char(n % 10 + '0', g_count);
 }
 
-int	ft_put_hex(unsigned int n, char format_specifier)
+void	ft_put_hex(unsigned int n, char format_specifier, int *g_count)
 {
-	int	len;
-
-	len = 0;
 	if (n > 15)
-		len += ft_put_hex(n / 16, format_specifier);
+		ft_put_hex(n / 16, format_specifier, g_count);
 	if (format_specifier == 'x')
-		len += ft_put_char("0123456789abcdef"[n % 16]);
+		ft_put_char("0123456789abcdef"[n % 16], g_count);
 	else
-		len += ft_put_char("0123456789ABCDEF"[n % 16]);
-	return (len);
+		ft_put_char("0123456789ABCDEF"[n % 16], g_count);
 }

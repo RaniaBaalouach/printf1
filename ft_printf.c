@@ -6,15 +6,16 @@
 /*   By: rbaaloua <rbaaloua@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 11:19:43 by rbaaloua          #+#    #+#             */
-/*   Updated: 2024/11/23 08:09:04 by rbaaloua         ###   ########.fr       */
+/*   Updated: 2024/11/23 11:19:16 by rbaaloua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	ft_put_char(char c)
+void	ft_put_char(char c, int *g_count)
 {
-	return (write(1, &c, 1));
+	(*g_count)++;
+	write(1, &c, 1);
 }
 
 int	ft_put_format(const char format_specifier, va_list arg_pointer)
@@ -23,17 +24,17 @@ int	ft_put_format(const char format_specifier, va_list arg_pointer)
 
 	len = 0;
 	if (format_specifier == 'c')
-		len += ft_put_char(va_arg(arg_pointer, int));
+		ft_put_char(va_arg(arg_pointer, int), &len);
 	else if (format_specifier == 's')
-		len += ft_put_str(va_arg(arg_pointer, char *));
+		ft_put_str(va_arg(arg_pointer, char *), &len);
 	else if (format_specifier == 'p')
-		len += ft_put_ptr(va_arg(arg_pointer, unsigned long));
+		ft_put_ptr(va_arg(arg_pointer, unsigned long), &len);
 	else if (format_specifier == 'd' || format_specifier == 'i')
-		len += ft_put_nbr(va_arg(arg_pointer, int));
+		ft_put_nbr(va_arg(arg_pointer, int), &len);
 	else if (format_specifier == 'u')
-		len += ft_put_unbr(va_arg(arg_pointer, unsigned int));
+		ft_put_unbr(va_arg(arg_pointer, unsigned int), &len);
 	else if (format_specifier == 'x' || format_specifier == 'X')
-		len += ft_put_hex(va_arg(arg_pointer, unsigned int), format_specifier);
+		ft_put_hex(va_arg(arg_pointer, unsigned int), format_specifier, &len);
 	return (len);
 }
 
@@ -49,11 +50,11 @@ int	ft_printf(const char *str_format, ...)
 	while (str_format[i])
 	{
 		if ((str_format[i] == '%') && (str_format[++i] == '%'))
-			len += ft_put_char(str_format[i]);
+			ft_put_char(str_format[i], &len);
 		else if ((str_format[i] == '%') && (str_format[++i] != '%'))
 			len += ft_put_format(str_format[i++], arg_pointer);
 		else
-			len += ft_put_char(str_format[i]);
+			ft_put_char(str_format[i], &len);
 		i++;
 	}
 	va_end(arg_pointer);

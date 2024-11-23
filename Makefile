@@ -1,11 +1,11 @@
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror
 NAME = libftprintf.a
 HEADER = ft_printf.h
 RM = rm -rf
 AR = ar -rcs
 
-SRC =	ft_printf.c ft_printf_utiles.c
+SRC =	ft_printf.c ft_printf_utils.c
 
 OBJ = $(SRC:.c=.o)
 
